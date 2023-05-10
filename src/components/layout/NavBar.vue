@@ -20,7 +20,7 @@
 
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a class="navbar-item"> <RouterLink to="/"> Órdenes Médicas </RouterLink></a>
+        <a class="navbar-item"> <RouterLink to="/home"> Órdenes Médicas </RouterLink></a>
         <a class="navbar-item"> <RouterLink to="/medicamentos"> Medicamentos </RouterLink> </a>
       </div>
     </div>
