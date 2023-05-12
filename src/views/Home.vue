@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import LoadingSkeleton from '../components/shared/LoadingSkeleton.vue'
+// import LoadingSkeleton from '../components/shared/LoadingSkeleton.vue'
 import MedicalOrderModal from '../components/medical-orders/MedicalOrderModal.vue'
 import CustomTable from '../components/shared/CustomTable.vue'
 import Welcome from '../components/common/Welcome.vue'
@@ -9,6 +9,8 @@ import { useMedicine } from '../composable/useMedicine'
 import type { MedicalOrder } from '@/types/medical-orders'
 import type { Medicine } from '@/types/medicines'
 import type { BaseColumn } from '@/types/shared'
+import NavBar from '../components/layout/NavBar.vue'
+import router from '@/router'
 
 const { getOrders, createOrder } = useOrder()
 const { getMedicines } = useMedicine()
@@ -65,15 +67,17 @@ const handleAddOrder = async (order: string) => {
   } catch (error) {
     console.log(error)
   }
+
 }
 
 getRecords()
 </script>
 
 <template>
+  <NavBar/>
   <div class="columns is-multiline">
     <div class="column is-12 mt-5 mb-6">
-      <Welcome message="Bienvenid@ David P. Avila" />
+      <Welcome message="Bienvenid@!!" />
     </div>
 
     <div class="column is-5">
@@ -104,11 +108,20 @@ getRecords()
       <button class="button is-primary" @click="isModalOpen = true">
         <span class="icon mr-1"> <i class="fa fa-plus"></i> </span> Agregar
       </button>
+      <button class="button is-primary" style="margin-left: 3px" @click="() => router.push({ name: 'read-order' })">
+        Consultar
+      </button>
+      <button class="button is-primary" style="margin-left: 3px" @click="() => router.push({ name: 'update-order' })">
+        Actualizar
+      </button>
+      <button class="button is-primary" style="margin-left: 3px" @click="() => router.push({ name: 'delete-order' })">
+        Eliminar
+      </button>
     </div>
 
     <div class="column is-12">
-      <LoadingSkeleton v-if="isLoading" />
-      <CustomTable v-else :cols="columns" :rows="rows" :has-medicines="true" />
+      <!-- <LoadingSkeleton v-if="isLoading" /> -->
+      <CustomTable :cols="columns" :rows="rows" :has-medicines="true" />
     </div>
 
     <MedicalOrderModal

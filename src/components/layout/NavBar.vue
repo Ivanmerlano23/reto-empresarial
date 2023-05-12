@@ -1,3 +1,13 @@
+<script lang="ts">
+
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'NavBar'
+})
+
+</script>
+
 <template>
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
@@ -22,6 +32,7 @@
       <div class="navbar-start">
         <a class="navbar-item"> <RouterLink to="/home"> Órdenes Médicas </RouterLink></a>
         <a class="navbar-item"> <RouterLink to="/medicamentos"> Medicamentos </RouterLink> </a>
+        <a class="navbar-item"> <RouterLink to="/"> Cerrar Sesión </RouterLink> </a>
       </div>
     </div>
   </nav>

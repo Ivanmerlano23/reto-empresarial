@@ -1,5 +1,7 @@
 import firebase from 'firebase'
 import 'firebase/firestore'
+import "firebase/auth";
+
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_FIREBASE_APIKEY,
@@ -14,5 +16,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 
 const DB = firebase.firestore()
+
+export const auth = firebase.auth();
+
+export const coleccion = DB.collection('Medical-Orders')
 
 export { DB }

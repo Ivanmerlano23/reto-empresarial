@@ -4,72 +4,101 @@ import { useVuelidate } from '@vuelidate/core'
 import { maxLength, required, numeric } from '@vuelidate/validators'
 import type { MedicalOrder } from '@/types/medical-orders'
 import type { Medicine } from '@/types/medicines'
+import type { BaseColumn } from '@/types/shared'
+import type { MedicineSelected } from '@/types/medicines-selected'
+import CustomTable from '@/components/shared/CustomTable.vue'
 
 export default defineComponent({
-  name: 'MedicalOrderModal',
-  props: {
-    isOpen: { type: Boolean, required: true },
-    medicines: { type: Array as PropType<Medicine[]>, require: true }
-  },
-  emits: ['save', 'hide'],
-  setup(props, { emit }) {
-    let isLoading = ref(false)
-    const order = ref<MedicalOrder>({
-      name: '',
-      lastName: '',
-      idNumber: '',
-      eps: '',
-      medicines: [],
-      comments: '',
-      doctorSignature: ''
-    })
+    name: "MedicalOrderModal",
+    props: {
+        isOpen: { type: Boolean, required: true },
+        medicines: { type: Array as PropType<Medicine[]>, require: true }
+    },
+    emits: ["save", "hide"],
+    setup(props, { emit }) {
 
-    const isModalOpen = computed(() => props.isOpen)
-    const medicineOptions = computed(() => props.medicines)
-    const rules = computed(() => ({
-      name: { required },
-      lastName: { required },
-      idNumber: { required, numeric, maxLenght: maxLength(12) },
-      eps: { required },
-      medicines: [],
-      doctorSignature: { required }
-    }))
+        let isLoading = ref(false);
+        const order = ref<MedicalOrder>({
+            name: "",
+            lastName: "",
+            idNumber: "",
+            eps: "",
+            medicines: [],
+            comments: "",
+            doctorSignature: ""
+        });
 
-    const v$ = useVuelidate(rules, order)
-
-    const handleSaveMO = async () => {
-      const isFormValid = await v$.value.$validate()
-
-      if (!isFormValid) {
-        return
-      }
-
-      isLoading.value = true
-
-      // TODO: save order
-      order.value.createdAt = new Date().toISOString()
-      emit('save', JSON.stringify(order.value))
-      console.log('Guardando...')
-
-      isLoading.value = false
-    }
-
-    const handleAddMedicine = () => {
-      console.log('Agregando medicamento...')
-    }
-
-    return {
-      v$,
-      emit,
-      order,
-      isLoading,
-      isModalOpen,
-      handleSaveMO,
-      medicineOptions,
-      handleAddMedicine
-    }
-  }
+        const medicineSelected = ref<MedicineSelected>({
+            name: "",
+            qty: ""
+        });
+        
+        const isModalOpen = computed(() => props.isOpen);
+        const medicineOptions = computed(() => props.medicines);
+        const rules = computed(() => ({
+            name: { required },
+            lastName: { required },
+            idNumber: { required, numeric, maxLenght: maxLength(12) },
+            eps: { required },
+            medicines: [],
+            doctorSignature: { required }
+        }));
+        const rows = ref<MedicineSelected[]>([]);
+        const columns = ref<BaseColumn[]>([
+            {
+                label: "Nombre",
+                field: "name"
+            },
+            {
+                label: "Cantidad",
+                field: "qty"
+            }
+        ]);
+        const v$ = useVuelidate(rules, order);
+        const handleSaveMO = async () => {
+            const isFormValid = await v$.value.$validate();
+            if (!isFormValid) {
+                return;
+            }
+            isLoading.value = true;
+            // TODO: save order
+            order.value.createdAt = new Date().toISOString();
+            emit("save", JSON.stringify(order.value));
+            console.log("Guardando...");
+            isLoading.value = false;
+        };
+        const handleAddMedicine = () => {
+             rows.value = [{
+              name: medicineSelected.value.name,
+              qty: medicineSelected.value.qty
+             }]
+            console.log("Agregando medicamento...");
+        };
+        return {
+            v$,
+            emit,
+            order,
+            isLoading,
+            isModalOpen,
+            handleSaveMO,
+            medicineOptions,
+            handleAddMedicine,
+            columns,
+            rows,
+            medicineSelected
+        };
+    },
+    components: { CustomTable }
 })
+
+// rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     match /{document=**} {
+//       allow read, write: if false;
+//     }
+//   }
+// }
 </script>
 
 <template>
@@ -148,9 +177,9 @@ export default defineComponent({
             <label class="has-text-grey has-text-weight-light">Medicamento</label>
             <div class="control has-icons-left">
               <div class="select is-fullwidth">
-                <select>
+                <select v-model="medicineSelected.name">
                   <option selected>Seleccione una opción</option>
-                  <option v-for="(medicine, idx) in medicineOptions" :key="idx" :value="medicine">
+                  <option v-for="(medicine, idx) in medicineOptions" :key="idx" :value="medicine.name">
                     {{ medicine.name }}
                   </option>
                 </select>
@@ -165,7 +194,7 @@ export default defineComponent({
           <div class="field">
             <label class="has-text-grey has-text-weight-light">Cantidad</label>
             <div class="control">
-              <input class="input" type="number" />
+              <input v-model="medicineSelected.qty" class="input" type="number" />
             </div>
           </div>
         </div>
@@ -182,15 +211,7 @@ export default defineComponent({
 
         <!-- Tabla de medicamentos seleccionados -->
         <div class="column is-12">
-          <vue-good-table
-            :columns="[]"
-            :rows="[]"
-            :sort-options="{
-              enabled: true
-            }"
-          >
-            <template #emptystate>No se ha agregado ningún medicamento</template>
-          </vue-good-table>
+          <CustomTable :cols="columns" :rows="rows" />
         </div>
 
         <div class="column is-12">

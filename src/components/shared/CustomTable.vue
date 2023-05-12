@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { MedicalOrder } from '@/types/medical-orders'
 import type { Medicine } from '@/types/medicines'
+import type { MedicineSelected } from '@/types/medicines-selected'
 import type { BaseColumn } from '@/types/shared'
 import { computed, type PropType, defineComponent } from 'vue'
 
@@ -8,7 +9,7 @@ export default defineComponent({
   name: 'CustomTable',
   props: {
     cols: { type: Array as PropType<BaseColumn[]>, required: true },
-    rows: { type: Array as PropType<MedicalOrder[] | Medicine[]>, required: true },
+    rows: { type: Array as PropType<MedicalOrder[] | Medicine[] | MedicineSelected[]>, required: true },
     hasMedicines: { type: Boolean, required: false },
     emptyMessage: { type: String, required: false }
   },
@@ -22,7 +23,7 @@ export default defineComponent({
       colsInfo,
       rowsInfo,
       emptyState,
-      showMedicines
+      showMedicines,
     }
   }
 })
